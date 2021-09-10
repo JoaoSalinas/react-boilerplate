@@ -100,7 +100,7 @@ Prettier
           "yarn lint --fix"
         ]
       },
-    No arquivo .husky/pre-commit, removemos o npm jest e colocamos yarn lint
+    No arquivo .husky/pre-commit, removemos o npm jest e colocamos npx --no-install lint-staged
 
 
 

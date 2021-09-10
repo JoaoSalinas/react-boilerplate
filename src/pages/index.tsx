@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '../../styles/Home.module.css'
 export default function Home({ title = 'React Avançado' }) {
-  const teste = "";
+  const teste = ''
 
   return (
     <div className={styles.container}>
@@ -13,9 +13,7 @@ export default function Home({ title = 'React Avançado' }) {
       </Head>
 
       <main className={styles.main}>
-        <h1 className={styles.title}>
-          {title}
-        </h1>
+        <h1 className={styles.title}>{title}</h1>
 
         <p className={styles.description}>
           Get started by editing{' '}
