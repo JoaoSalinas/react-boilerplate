@@ -64,8 +64,7 @@
   Criamos um script para o lint no nosso package.json:
     "lint": "eslint src"
 
-
-Prettier
+7- Prettier
   yarn add --dev exact prettier
   criamos na raiz um arquivo chamado .prettierrc com
     {
@@ -86,8 +85,7 @@ Prettier
       }
     }
 
-
-  git hooks:
+8- git hooks:
     husky:
       yarn add husky --dev
       yarn husky init && yarn
@@ -102,9 +100,143 @@ Prettier
       },
     No arquivo .husky/pre-commit, removemos o npm jest e colocamos npx --no-install lint-staged
 
+9- Testes:
+    Jest:
+      yarn add --dev jest @babel/preset-typescript @types/jest
+      no eslint, adicionamos:
+        "jest": true,
+        "node": true
+      Criamos um arquivo na raiz chamado jest.config.js com as seguintes informações:
+        module.exports = {
+          testEnvironment: 'jsdom',
+          testPathIgnorePatterns: ['/node_modules/', '/.next/'],
+          collectCoverage: true,
+          collectCoverageFrom: ['src/**/*.ts(x)'],
+          setupFilesAfterEnv: ['<rootDir>/.jest/setup.ts']
+        }
+
+      Agora, configuramos o babel, criamos um arquivo na raiz chamado .babelrc e incluimos o seguinte:
+        {
+          "presets": [
+            "next/babel", "@babel/preset-typescript"
+          ]
+        }
+
+      Para salvar nosso setup do jest, criamos uma pasta na raiz chamada .jest e dentro dela, um arquivo chamado setup.ts, em branco
+
+      No package.json criamos os seguinte script:
+        "test": "jest"
+        "test:watch" : "yarn test --watch"
 
 
+      React testing library:
+        yarn add --dev @testing-library/react @testing-library/jest-dom
+
+        No arquivo em .jest/setup.ts acrescentamos:
+          import '@testing-library/jest-dom'
+
+        Para testar, vamos criar a seguinte estrutura de pastar a partir de src:
+          src
+            components
+              Main
+                index.tsx
+                  const Main = () => (
+                    <main>
+                      <h1>React Avançado</h1>
+                    </main>
+                  )
+
+                  export default Main
+
+                test.tsx
+                  import { render, screen } from '@testing-library/react'
+
+                  import Main from '.'
+
+                  describe('<Main />', () => {
+                    it('should render the heading', () => {
+                      render(<Main />)
+
+                      expect(
+                        screen.getByRole('heading', { name: /react avançado/i })
+                      ).toBeInTheDocument()
+                    })
+                  })
+        Snapshot:
+          .toMatchSnapshot()
+
+        no package.json, em lint-staged, ao lado do lint --fix vamos adicionar:
+          , "yarn test --findRelatedTests --bail"
+
+10- styled components:
+  yarn add --dev @types/styled-components babel-plugin-styled-components
+  Em .babelrc, antes dos presets adicionamos:
+   "plugins":
+     ["babel-plugin-styled-components",
+    {
+      "ssr" : true
+    }]
 
 
+  yarn add styled-components
+
+  criaremos o arquivo ./pages/_document.tsx e alimentamos com os dados da documentação da vercel e tipamos
+
+  Agora vamos criar os estilos globais:
+    Em src criamos uma pasta chamada styles e dentro dela um arquivo globals.ts e resetamos os estilos
+
+    Criamos na pasta .pages um arquivo chamado _app.tsx
+
+    Setamos no tsconfig a raiz do nosso projeto
+      "baseUrl": "src",
+
+  yarn add --dev jest-styled-components
+  adicionaremos no setup.ts: import 'jest-styled-components'
+
+11- Storybook:
+  npx sb init
+
+  instalar knobs:
+  yarn add @storybook/addon-knobs --dev
+
+  no main.js, em addons:
+    '@storybook/addon-knobs/register'
 
 
+12- PWA
+  yarn add next-pwa
+  criamos na raiz o next.config.js e colamos:
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const withPWA = require('next-pwa')
+    const isProd = process.env.NODE_ENV === 'production'
+
+    module.exports = withPWA({
+      pwa: {
+        dest: 'public',
+        disable: !isProd
+      }
+    })
+  criamos na pasta public o arquivo manifest.json e inserimos o codigo a seguir:
+    {
+      "name": "React Avançado - Boilerplate",
+      "short_name": "React Avançado",
+      "icons": [
+        {
+          "src": "/img/icon-192.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        },
+        {
+          "src": "/img/icon-512.png",
+          "type": "image/png",
+          "sizes": "512x512"
+        }
+      ],
+      "background_color": "#06092B",
+      "description": "Boilerlate utilizando Typescript, React, NextJS e Styled Components!",
+      "display": "fullscreen",
+      "start_url": "/",
+      "theme_color": "#06092B"
+    }
+    Para testar vamos rodar:
+      NODE_ENV=production yarn build
